@@ -1,0 +1,4 @@
+2026-11-19 13:50:06.079 MSK [15276] LOG:  statement: INSERT INTO customers (full_name, passport, passport_hmac) VALUES
+	    ('Иванов Иван',   pgp_sym_encrypt('4510 123456', 'demo-encryption-key-change-me', 'cipher-algo=aes256'), hmac('4510 123456', 'demo-search-key-change-me', 'sha256')),
+	    ('Петрова Мария', pgp_sym_encrypt('4512 654321', 'demo-encryption-key-change-me', 'cipher-algo=aes256'), hmac('4512 654321', 'demo-search-key-change-me', 'sha256')),
+	    ('Сидоров Пётр',  pgp_sym_encrypt('4510 123456', 'demo-encryption-key-change-me', 'cipher-algo=aes256'), hmac('4510 123456', 'demo-search-key-change-me', 'sha256'));

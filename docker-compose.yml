@@ -1,0 +1,22 @@
+# Стенд доклада: PostgreSQL 17 + расширение pgcrypto (входит в стандартную поставку).
+# Данные не сохраняются между перезапусками: стенд одноразовый.
+
+services:
+  db:
+    image: postgres:17
+    container_name: pgcrypto-demo
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    # log_statement=all — чтобы показать, что ключ шифрования, переданный в SQL, попадает в журнал сервера
+    command: postgres -c log_statement=all
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql:/sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "demo", "-d", "demo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20

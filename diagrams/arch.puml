@@ -1,0 +1,37 @@
+@startuml arch
+title pgcrypto: регистрация, вход и работа с паспортными данными
+
+actor "Пользователь" as user
+participant "Приложение" as app
+participant "PostgreSQL\n+ pgcrypto" as db
+database "Таблицы\nusers, customers" as tables
+collections "Журнал сервера" as log
+
+== Регистрация ==
+user -> app : логин + пароль
+app -> db : INSERT … crypt(пароль, gen_salt('bf', 10))
+db -> db : bcrypt: случайная соль + 2^10 раундов
+db -> tables : password_hash = bcrypt-хеш\n(алгоритм, стоимость и соль внутри строки)
+note right of tables : сам пароль нигде не хранится
+
+== Вход ==
+user -> app : логин + пароль
+app -> db : SELECT password_hash = crypt(пароль, password_hash)
+db -> tables : прочитать хеш (в нём соль и стоимость)
+db --> app : true / false
+
+== Сохранение паспорта ==
+app -> app : ключ из переменной окружения или Vault
+app -> db : INSERT … pgp_sym_encrypt(паспорт, ключ),\nhmac(паспорт, ключ_поиска)
+db -> log : текст запроса вместе с ключом,\nесли включён log_statement
+db -> tables : passport = шифротекст (bytea)
+
+== Чтение паспорта ==
+app -> db : SELECT pgp_sym_decrypt(passport, ключ)\nWHERE passport_hmac = hmac(…)
+db -> tables : найти строку по индексу HMAC
+db --> app : паспорт открытым текстом
+note over app, db
+  Между приложением и БД данные и ключ идут открытым текстом:
+  нужно TLS-соединение (hostssl в pg_hba.conf)
+end note
+@enduml
