@@ -116,6 +116,17 @@ psql -U demo -d demo -f sql/demo.sql
 
 Остановить сервер: `pg_ctl -D ~/pgcrypto-demo/data stop`. На Linux вместо Homebrew — пакет `postgresql-17` из репозитория PGDG.
 
+### 3.3. Пошаговый показ для выступления
+
+[scripts/walkthrough.sh](scripts/walkthrough.sh) показывает демо по шагам: каждый шаг очищает экран, печатает заголовок и запрос и выполняет его.
+
+```bash
+./scripts/walkthrough.sh           # следующий шаг по Enter — для живого показа
+AUTO=6 ./scripts/walkthrough.sh    # шаги идут сами с паузой 6 секунд — для записи видео
+```
+
+С Docker: `PSQL="docker compose exec -T db psql" SQLFILE=/sql/demo.sql ./scripts/walkthrough.sh`.
+
 Подключение из DBeaver в обоих вариантах: `localhost:5432`, база `demo`, пользователь `demo` (в варианте A пароль `demo`).
 
 <details>
@@ -127,6 +138,8 @@ report-pgcrypto/
 ├── docker-compose.yml
 ├── sql/
 │   └── demo.sql         ← демонстрационный скрипт
+├── scripts/
+│   └── walkthrough.sh   ← пошаговый показ демо
 ├── output/              ← реальный вывод demo.sql и строка журнала с ключом
 ├── diagrams/
 │   ├── arch.puml        ← PlantUML: последовательность операций
